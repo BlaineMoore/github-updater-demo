@@ -169,7 +169,7 @@ class GitHubUpdater
                 'PluginURI' => 'Plugin URI',
                 'Version' => 'Version',
                 'UpdateURI' => 'Update URI',
-                'PluginTested' => 'Plugin Tested To'
+                'PluginTested' => 'Tested Up To'
             ]
         );
 
