@@ -8,7 +8,7 @@ namespace RYSE\GitHubUpdaterDemo;
  *
  * @author Ryan Sechrest
  * @package RYSE\GitHubUpdaterDemo
- * @version 1.0.5
+ * @version 1.0.6
  */
 class GitHubUpdater
 {
@@ -158,6 +158,7 @@ class GitHubUpdater
      *   $pluginSlug      Plugin slug          ryansechrest-github-updater-demo
      *   $pluginUrl       Plugin URL           https://ryansechrest.github.io/github-updater-demo
      *   $pluginVersion   Plugin version       1.0.0
+     *   $pluginTested    Plugin Tested To     6.5.4
      */
     private function load(): void
     {
@@ -168,6 +169,7 @@ class GitHubUpdater
                 'PluginURI' => 'Plugin URI',
                 'Version' => 'Version',
                 'UpdateURI' => 'Update URI',
+                'PluginTested' => 'Plugin Tested To'
             ]
         );
 
@@ -175,6 +177,7 @@ class GitHubUpdater
         $pluginUri = $pluginData['PluginURI'] ?? '';
         $updateUri = $pluginData['UpdateURI'] ?? '';
         $version = $pluginData['Version'] ?? '';
+        $pluginTested = $pluginData['PluginTested'] ?? '';
 
         // If required fields were not set, exit
         if (!$pluginUri || !$updateUri || !$version) {
@@ -216,6 +219,9 @@ class GitHubUpdater
 
         // e.g. `1.0.0`
         $this->pluginVersion = $version;
+
+        // e.g. `6.5.4`
+        $this->testedWpVersion = $pluginTested;
     }
 
     /**

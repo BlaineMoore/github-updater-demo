@@ -12,6 +12,7 @@ namespace RYSE\GitHubUpdaterDemo;
  * Text Domain:        ryse-github-updater-demo
  * Requires at least:  6.5
  * Requires PHP:       8.2
+ * Tested Up To:       6.5.4
  * Update URI:         https://github.com/ryansechrest/github-updater-demo
  * License:            GPLv2
  * License URI:        https://www.gnu.org/licenses/gpl-2.0.html
