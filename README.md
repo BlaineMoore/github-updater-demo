@@ -34,6 +34,11 @@ If your production branch is not the default `main`, then specify it:
 ```php
 $gitHubUpdater->setBranch('master');
 ```
+Alternatively, you can add the following plugin header field instead:
+
+```php
+* Branch Name:    main
+```
 
 ### Configure: Personal Access Token (Optional)
 
@@ -69,6 +74,12 @@ Specify the highest version of WordPress you've tested your plugin on:
 
 ```php
 $gitHubUpdater->setTestedWpVersion('6.5.2');
+```
+
+Alternatively, you can add the following plugin header field instead:
+
+```php
+* Tested Up To:    6.5.2
 ```
 
 This only impacts the compatibility message on Dashboard > Updates.
