@@ -71,6 +71,12 @@ Specify the highest version of WordPress you've tested your plugin on:
 $gitHubUpdater->setTestedWpVersion('6.5.2');
 ```
 
+Alternatively, you can add the following plugin header field instead:
+
+```php
+* Tested Up To:    6.5.2
+```
+
 This only impacts the compatibility message on Dashboard > Updates.
 
 ### Add GitHubUpdater (Required)
