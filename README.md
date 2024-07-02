@@ -34,6 +34,11 @@ If your production branch is not the default `main`, then specify it:
 ```php
 $gitHubUpdater->setBranch('master');
 ```
+Alternatively, you can add the following plugin header field instead:
+
+```php
+* Branch Name:    main
+```
 
 ### Configure: Personal Access Token (Optional)
 
