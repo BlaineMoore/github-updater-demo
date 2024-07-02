@@ -159,6 +159,7 @@ class GitHubUpdater
      *   $pluginUrl       Plugin URL           https://ryansechrest.github.io/github-updater-demo
      *   $pluginVersion   Plugin version       1.0.0
      *   $pluginTested    Plugin Tested To     6.5.4
+     *   $pluginBranch    Plugin Branch        main
      */
     private function load(): void
     {
@@ -169,7 +170,8 @@ class GitHubUpdater
                 'PluginURI' => 'Plugin URI',
                 'Version' => 'Version',
                 'UpdateURI' => 'Update URI',
-                'PluginTested' => 'Tested Up To'
+                'PluginTested' => 'Tested Up To',
+                'Branch' => 'Branch Name'
             ]
         );
 
@@ -178,6 +180,7 @@ class GitHubUpdater
         $updateUri = $pluginData['UpdateURI'] ?? '';
         $version = $pluginData['Version'] ?? '';
         $pluginTested = $pluginData['PluginTested'] ?? '';
+        $pluginBranch = $pluginData['Branch'] ?? 'main';
 
         // If required fields were not set, exit
         if (!$pluginUri || !$updateUri || !$version) {
@@ -222,6 +225,11 @@ class GitHubUpdater
 
         // e.g. `6.5.4`
         $this->testedWpVersion = $pluginTested;
+
+        // e.g. `main` or `master`
+        $this->gitHubBranch = $pluginBranch;
+
+        
     }
 
     /**
@@ -407,7 +415,7 @@ class GitHubUpdater
         // Get public remote plugin file containing plugin header,
         // e.g. `https://raw.githubusercontent.com/ryansechrest/github-updater-demo/master/github-updater-demo.php`
         $remoteFile = $this->getPublicRemotePluginFile($this->pluginFilename);
-
+        
         return wp_remote_retrieve_body(
             wp_remote_get($remoteFile)
         );
