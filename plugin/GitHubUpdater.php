@@ -8,7 +8,7 @@ namespace RYSE\GitHubUpdaterDemo;
  *
  * @author Ryan Sechrest
  * @package RYSE\GitHubUpdaterDemo
- * @version 1.0.6
+ * @version 1.0.8
  */
 class GitHubUpdater
 {
@@ -107,6 +107,48 @@ class GitHubUpdater
      */
     private string $pluginVersion = '';
 
+    /**
+     * Plugin Author
+     * 
+     * @var string Ryan Sechrest
+     */
+    private string $pluginAuthor = '';
+
+    /**
+     * Plugin Author URI
+     * 
+     * @var string https://ryansechrest.com/
+     */
+    private string $pluginAuthorURI = '';
+
+    /**
+     * Plugin Description
+     * 
+     * @var string WordPress plugin to demonstrate how `GitHubUpdater` can enable WordPress to check for and update a custom plugin that's hosted in either a public or private repository on GitHub.
+     */
+    private string $pluginDescription = '';
+
+    /**
+     * Plugin Name
+     * 
+     * @var string GitHub Updater Demo
+     */
+    private string $pluginName = '';
+
+    /**
+     * Plugin Icons
+     * 
+     * @var string [1x, 2x]
+     */
+    private $pluginIcons = false;
+
+    /**
+     * Plugin Banners
+     * 
+     * @var string [low, high]
+     */
+    private $pluginBanners = false;
+
     /*------------------------------------------------------------------------*/
 
     /**
@@ -115,6 +157,20 @@ class GitHubUpdater
      * @var string 6.5.2
      */
     private string $testedWpVersion = '';
+
+    /**
+     * Plugin Minimum WP Version
+     * 
+     * @var string 6.5
+     */
+    private string $pluginMinimumWP = '6.0';
+
+    /**
+     * Plugin Minimum PHP Version
+     * 
+     * @var string 8.2
+     */
+    private string $pluginMinimumPHP = '8.2';
 
     /**************************************************************************/
 
@@ -171,7 +227,17 @@ class GitHubUpdater
                 'Version' => 'Version',
                 'UpdateURI' => 'Update URI',
                 'PluginTested' => 'Tested Up To',
-                'Branch' => 'Branch Name'
+                'Branch' => 'Branch Name',
+                'Author' => 'Author',
+                'AuthorURI' => 'Author URI',
+                'Description' => 'Description',
+                'RequiresWP' => 'Requires at least',
+                'RequiresPHP' => 'Requires PHP',
+                'PluginName' => 'Plugin Name',
+                'Icon1xURI' => 'Icon URI',
+                'Icon2xURI' => 'Icon 2x URI',
+                'Banner1xURI' => 'Banner URI',
+                'Banner2xURI' => 'Banner 2x URI'
             ]
         );
 
@@ -182,9 +248,34 @@ class GitHubUpdater
         $pluginTested = $pluginData['PluginTested'] ?? '';
         $pluginBranch = $pluginData['Branch'] ?? 'main';
 
+        $pluginAuthor = $pluginData['Author'] ?? '';
+        $pluginAuthorURI = $pluginData['AuthorURI'] ?? '';
+        $pluginDescription = $pluginData['Description'] ?? '';
+        $pluginRequiresWP = $pluginData['RequiresWP'] ?? '6.0';
+        $pluginRequiresPHP = $pluginData['RequiresPHP'] ?? '8.2';
+        $pluginName = $pluginData['PluginName'] ?? '';
+
+        // Plugin icons can be remote URLs or a relative path (from the location of this file) to a local assets directory.
+        $pluginIcons = false;
+        if($pluginData['Icon1xURI']) { 
+            $pluginIcons['1x'] = (substr( $pluginData['Icon1xURI'],0,4) == 'http') ? $pluginData['Icon1xURI'] : plugins_url($pluginData['Icon1xURI'],__FILE__); 
+        }
+        if($pluginData['Icon2xURI']) { 
+            $pluginIcons['2x'] = (substr( $pluginData['Icon2xURI'],0,4) == 'http') ? $pluginData['Icon2xURI'] : plugins_url($pluginData['Icon2xURI'],__FILE__); 
+        }
+
+        // Plugin icons can be remote URLs or a relative path (from the location of this file) to a local assets directory.
+        $pluginBanners = false;
+        if($pluginData['Banner1xURI']) { 
+            $pluginBanners['low'] = (substr( $pluginData['Banner1xURI'],0,4 )=='http') ? $pluginData['Banner1xURI'] : plugins_url($pluginData['Banner1xURI'],__FILE__); 
+        }
+        if($pluginData['Banner2xURI']) {
+            $pluginBanners['high'] = (substr( $pluginData['Banner2xURI'],0,4) == 'http') ? $pluginData['Banner2xURI'] : plugins_url($pluginData['Banner2xURI'],__FILE__); 
+        }
+        
         // If required fields were not set, exit
-        if (!$pluginUri || !$updateUri || !$version) {
-            $this->addAdminNotice('Plugin <b>%s</b> is missing one or more required header fields: <b>Plugin URI</b>, <b>Version</b>, and/or <b>Update URI</b>.');
+        if (!$pluginUri || !$updateUri || !$version || !$pluginName) {
+            $this->addAdminNotice('Plugin <b>%s</b> is missing one or more required header fields: <b>Plugin Name</b>, <b>Plugin URI</b>, <b>Version</b>, and/or <b>Update URI</b>.');
             return;
         };
 
@@ -229,6 +320,26 @@ class GitHubUpdater
         // e.g. `main` or `master`
         $this->gitHubBranch = $pluginBranch;
 
+        // e.g. `Ryan Sechrest`
+        $this->pluginAuthor = $pluginAuthor;
+
+        // e.g. `https://ryansechrest.com/`
+        $this->pluginAuthorURI = $pluginAuthorURI;
+
+        // e.g. `WordPress plugin to demonstrate how `GitHubUpdater` can enable WordPress to check for and update a custom plugin that's hosted in either a public or private repository on GitHub.`
+        $this->pluginDescription = $pluginDescription;
+
+        // e.g. `6.5`
+        $this->pluginMinimumWP = $pluginRequiresWP;
+
+        // e.g. `8.2`
+        $this->pluginMinimumPHP = $pluginRequiresPHP;
+
+        // e.g. `GitHub Updater Demo`
+        $this->pluginName = $pluginName;
+
+        if($pluginIcons) { $this->pluginIcons = $pluginIcons; }
+        if($pluginBanners) { $this->pluginBanners = $pluginBanners; }
         
     }
 
@@ -288,36 +399,71 @@ class GitHubUpdater
     private function updatePluginDetailsUrl(): void
     {
         add_filter(
-            'admin_url',
+            'plugins_api',
             [$this, '_updatePluginDetailsUrl'],
             10,
-            2
+            3
         );
     }
 
     /**
-     * Hook to update plugin details URL.
+     * Hook to update plugin details.
      *
-     *   $url      The complete admin area URL including scheme and path.
-     *
-     *   $path     Path relative to the admin area URL. Blank string if no path
-     *             is specified.
-     *
-     * @param string $url https://example.org/wp-admin/plugin-install.php?tab=plugin-information&plugin=ryansechrest-github-updater-demo&TB_iframe=true&width=600&height=550
-     * @param string $path plugin-install.php?tab=plugin-information&plugin=ryansechrest-github-updater-demo&TB_iframe=true&width=600&height=550
-     * @return string
+     * @param array|false|object $result The result object or array. Default false.
+     * @param string             $action The type of information being requested from the Plugin Installation API.
+     * @param object             $args   Plugin API arguments.
      */
-    public function _updatePluginDetailsUrl(string $url, string $path): string
+    public function _updatePluginDetailsUrl(bool $result, string $action, object $args)
     {
-        $query = 'plugin=' . $this->pluginSlug;
+        if ('plugin_information' !== $action || empty($args->slug)) {
+            return false;
+        }
 
-        // If URL doesn't reference target plugin, exit
-        if (!str_contains($path, $query)) return $url;
+        if ($args->slug == current(explode('/', $this->pluginSlug))) {
 
-        return sprintf(
-            '%s?TB_iframe=true&width=600&height=550',
-            $this->pluginUrl
-        );
+            // Get remote plugin file contents to read plugin header
+            $fileContents = $this->getRemotePluginFileContents();
+
+            // Extract plugin version from remote plugin file contents
+            preg_match_all(
+                '/\s+\*\s+Version:\s+(\d+(\.\d+){0,2})/',
+                $fileContents,
+                $matches
+            );
+
+            // Save plugin version from remote plugin file, e.g. `1.1.0`
+            $newVersion = $matches[1][0] ?? '';
+
+            // If version wasn't found, exit
+            if (!$newVersion) return $update;
+
+            // Build plugin response for WordPress
+            $plugin = [
+                'name' => $this->pluginName,
+                'slug' => $this->pluginSlug,
+                'requires' => $this->pluginMinimumWP,
+                'tested' => $this->testedWpVersion,
+                'version' => $newVersion,
+                'author' => $this->pluginAuthor,
+                'author_profile' => $this->pluginAuthorURI,
+
+                'homepage' => $this->pluginUrl,
+                'plugin' => $this->pluginFile,
+                'short_description' => $this->pluginDescription,
+                'sections' => [
+                    'Description' => $this->pluginDescription,
+                    'Updates' => wp_remote_request($this->pluginUrl)['body'], //'Updates not yet provided...',
+                ],
+                'download_link' => $this->getRemotePluginZipFile(),
+            ];
+            if($this->pluginIcons) { $plugin['icons'] = $this->pluginIcons; }
+            if($this->pluginBanners) { $plugin['banners'] = $this->pluginBanners; }
+            
+            //$plugin['sections']['Debug'] = implode('<br /><br />',$plugin['banners']);
+            return (object) $plugin;
+        }
+
+        return $result;
     }
 
     /*------------------------------------------------------------------------*/
@@ -376,21 +522,24 @@ class GitHubUpdater
 
         // If version wasn't found, exit
         if (!$newVersion) return $update;
-
         // Build plugin response for WordPress
-        return [
-            'id' => $this->gitHubUrl,
+        $plugin = [
+            'name' => $this->pluginName,
             'slug' => $this->pluginSlug,
-            'plugin' => $this->pluginFile,
-            'version' => $newVersion,
-            'url' => $this->pluginUrl,
-            'package' => $this->getRemotePluginZipFile(),
-            'icons' => [
-                '2x' => $this->pluginUrl . '/icon-256x256.png',
-                '1x' => $this->pluginUrl . '/icon-128x128.png',
-            ],
+            'requires' => $this->pluginMinimumWP,
             'tested' => $this->testedWpVersion,
+            'version' => $newVersion,
+            'author' => $this->pluginAuthor,
+            'author_profile' => $this->pluginAuthorURI,
+
+            'homepage' => $this->pluginUrl,
+            'plugin' => $this->pluginFile,
+            'short_description' => $this->pluginDescription,
+            'download_link' => $this->getRemotePluginZipFile(),
         ];
+        if($this->pluginIcons) { $plugin['icons'] = $this->pluginIcons; }
+
+        return $plugin;
     }
 
     /**
