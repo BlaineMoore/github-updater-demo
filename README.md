@@ -84,6 +84,34 @@ Alternatively, you can add the following plugin header field instead:
 
 This only impacts the compatibility message on Dashboard > Updates.
 
+### Configure Minimum Requirements (Optional)
+
+To specify the minimum version of WordPress and PHP required for this plugin, specify the following plugin header fields:
+
+```php
+* Requires at least:    6.5
+* Requires PHP:         8.2
+```
+
+### Configure Plugin Icons and Banners (Optional)
+
+To add the Icon and Banner image to your plugin, you can add the following plugin header fields:
+
+```php
+* Icon URI:         ../docs/icon-128x128.png
+* Icon 2x URI:      ../docs/icon-256x256.png
+* Banner URI:       ../docs/banner-772x250.png
+* Banner 2x URI:    ../docs/banner-1544x500.png
+```
+
+The default sizes for the icons and banners are listed above in the example filenames above (though you can name them anything you want), and the value for those fields supports both relative and absolute URLs. 
+
+If you use an absolute URL, then that image must be publicly accessible to the browser. 
+
+If you use a relative URL, then that URL *must* be relative to the `GitHubUpdater.php` file; if it is in a subfolder of the plugin, and the images are located in a separate subfolder off of the root, then you must walk back the folder.
+
+For example, if the update class is located at `includes/GitHubUpdater.php` and the images are located in `images/` then the relative url would be `../images/filename.png`. 
+
 ### Add GitHubUpdater (Required)
 
 Add all necessary hooks to WordPress to keep your plugin updated moving forward:
@@ -94,4 +122,4 @@ $gitHubUpdater->add();
 
 This should be the last method call after `GitHubUpdater` has been configured.
 
-If you want a deep dive into how `GitHubUpdater` works, check out this [blog post](https://ryansechrest.com/2024/04/how-to-enable-wordpress-to-update-your-custom-plugin-hosted-on-github/).
+If you want a deep dive into how `GitHubUpdater` works, check out this [blog post](https://ryansechrest.com/2024/04/how-to-enable-wordpress-to-update-your-custom-plugin-hosted-on-github/) by the original developer; note that some changes have been added in this fork..
