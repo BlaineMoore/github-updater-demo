@@ -63,6 +63,13 @@ class GitHubUpdater
      */
     private string $gitHubAccessToken = '';
 
+    /**
+     * GitHub versions array
+     * 
+     * @var array https://api.github.com/repos/BlaineMoore/github-updater-demo/releases
+     */
+    private array $gitHubVersions = [];
+
     /*------------------------------------------------------------------------*/
 
     /**
@@ -452,7 +459,7 @@ class GitHubUpdater
                 'short_description' => $this->pluginDescription,
                 'sections' => [
                     'Description' => $this->pluginDescription,
-                    'Updates' => wp_remote_request($this->pluginUrl)['body'], //'Updates not yet provided...',
+                    'Changelog' => $this->getPluginChangeLog(),
                 ],
                 'download_link' => $this->getRemotePluginZipFile(),
             ];
@@ -666,6 +673,68 @@ class GitHubUpdater
             $this->gitHubPath,
             $this->gitHubBranch
         );
+    }
+
+    /**
+     * Loads an array of versions from the GitHub API.
+     */
+    private function loadRepositoryVersions(): void
+    {
+        if(null === $this->gitHubVersions) { return; }
+
+        $headers = [ 'Accept' => 'application/vnd.github+json', ];
+        if($this->gitHubAccessToken) { $headers['Authorization'] = 'Bearer ' . $this->gitHubAccessToken; }
+
+        $args = [
+            'method' => 'GET',
+            'timeout' => 5,
+            'redirection' => 5,
+            'httpversion' => '1.0',
+            'headers' => $headers,
+            'sslverify' => true,
+        ];
+        $request_uri = sprintf('https://api.github.com/repos/%s/%s/releases',
+                            $this->gitHubOrg,
+                            $this->gitHubRepo);
+        
+        $this->gitHubVersions = json_decode(wp_remote_retrieve_body(wp_remote_get($request_uri, $args)));
+    }
+
+    /**
+     * Creates an HTML changelog of updates, using versions from the repository if present 
+     * or the plugin URI if not.
+     * 
+     * @return string "<em>Changelog not currently available.</em>"
+     */
+
+    private function getPluginChangeLog(): string 
+    {
+        $this->loadRepositoryVersions();
+        
+        $changeLog = '<em>Changelog not currently available.</em>';
+        if(0 < count($this->gitHubVersions)) {
+            $changeLog = '';
+            foreach($this->gitHubVersions as $version) {
+                $changeLog .= "<h4>".$version->name."</h4>\n".$this->replaceMarkDown($version->body)."\n<br />\n";
+            }
+        } elseif(strlen($this->pluginUrl) > 0) {
+            $changeLog = wp_remote_request($this->pluginUrl)['body'];
+        }
+
+        return $changeLog;
+    }
+
+    /**
+     * Replaces the markdown syntax with HTML.
+     * 
+     * This could be replaced with a more robust external library at a later time,
+     * but for now just handles simple HTML.
+     * 
+     * @return string 'Version 1.0.8'
+     */
+    private function replaceMarkDown($md): string 
+    {
+        return $md; // functionality incoming.
     }
 
     /*------------------------------------------------------------------------*/
