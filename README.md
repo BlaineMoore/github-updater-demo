@@ -118,7 +118,7 @@ There are 3 options that can be displayed for the changelog:
 
 #### First Priority: GitHub Versions
 
-If you create versions of the software in GitHub, then the Changelog will be generated based on the version names and descriptions for each version. 
+If you create versions of the software in GitHub, then the Changelog will be generated based on the version names, publication dates, and descriptions for each version. 
 
 Some markdown to HTML is automatically done, but not all markdown.
 

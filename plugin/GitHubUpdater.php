@@ -6,9 +6,14 @@ namespace RYSE\GitHubUpdaterDemo;
  * Enable WordPress to check for and update a custom plugin that's hosted in
  * either a public or private repository on GitHub.
  *
- * @author Ryan Sechrest
  * @package RYSE\GitHubUpdaterDemo
- * @version 1.0.9
+ * @version 1.1.0
+ * 
+ * @since 1.0.0
+ * @author Ryan Sechrest
+ *
+ * @since 1.0.6
+ * @author Blaine Moore
  */
 class GitHubUpdater
 {
@@ -716,7 +721,9 @@ class GitHubUpdater
         if(0 < count($this->gitHubVersions)) {
             $changeLog = '';
             foreach($this->gitHubVersions as $version) {
-                $changeLog .= "<h4>".$version->name."</h4>\n".$this->replaceMarkDown($version->body)."\n<br />\n";
+                $changeLog .= "<h4>".$version->name." (".
+                            wp_date( get_option( 'date_format' ), strtotime($version->published_at) ).")</h4>\n".
+                            $this->replaceMarkDown($version->body)."\n<br />\n";
             }
         } elseif(strlen($this->pluginUrl) > 0) {
             $changeLog = wp_remote_request($this->pluginUrl)['body'];
