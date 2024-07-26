@@ -112,6 +112,28 @@ If you use a relative URL, then that URL *must* be relative to the `GitHubUpdate
 
 For example, if the update class is located at `includes/GitHubUpdater.php` and the images are located in `images/` then the relative url would be `../images/filename.png`. 
 
+### Configure Changelog
+
+There are 3 options that can be displayed for the changelog:
+
+#### First Priority: GitHub Versions
+
+If you create versions of the software in GitHub, then the Changelog will be generated based on the version names and descriptions for each version. 
+
+Some markdown to HTML is automatically done, but not all markdown.
+
+#### Second Priority: Plugin URL
+
+If there are no GitHub versions defined, then the Plugin URL as defined in the plugin header field will be used instead:
+```php
+* Plugin URI:         https://ryansechrest.github.io/github-updater-demo
+```
+Whatever content is located at that page will be displayed in the Changelog.
+
+#### Final Priority: No Changelog
+
+If neither of the above options are present in your plugin, then the `Changelog` tab will just read: _Changelog not currently available._
+
 ### Add GitHubUpdater (Required)
 
 Add all necessary hooks to WordPress to keep your plugin updated moving forward:

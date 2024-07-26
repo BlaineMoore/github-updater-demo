@@ -8,7 +8,7 @@ namespace RYSE\GitHubUpdaterDemo;
  *
  * @author Ryan Sechrest
  * @package RYSE\GitHubUpdaterDemo
- * @version 1.0.8
+ * @version 1.0.9
  */
 class GitHubUpdater
 {
