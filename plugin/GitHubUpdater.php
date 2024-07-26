@@ -458,7 +458,7 @@ class GitHubUpdater
                 'plugin' => $this->pluginFile,
                 'short_description' => $this->pluginDescription,
                 'sections' => [
-                    'Description' => $this->pluginDescription,
+                    'Description' => $this->replaceMarkDown($this->pluginDescription),
                     'Changelog' => $this->getPluginChangeLog(),
                 ],
                 'download_link' => $this->getRemotePluginZipFile(),
