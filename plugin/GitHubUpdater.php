@@ -767,10 +767,10 @@ class GitHubUpdater
         $patterns[] = '/\[(.+)\]\((<a href=[^>]+>).+<.a>\)/'; // Named Links
         $replacements[] = '$2$1</a>';
 
-        $patterns[] = '/\*\*([^\*]+)\*\*/'; // Italics/emphasis text
+        $patterns[] = '/\*\*([^\*]+)\*\*/'; // Bold/strong text
         $replacements[] = '<strong>$1</strong>';
 
-        $patterns[] = '/_([^\*]+)_/'; // Bold/strong text
+        $patterns[] = '/_([^\_]+)_/'; // Italics/emphasis text
         $replacements[] = '<em>$1</em>';
 
         $patterns[] = '/`([^\`]+)`/'; // Code
