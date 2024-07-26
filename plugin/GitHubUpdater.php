@@ -773,9 +773,10 @@ class GitHubUpdater
         $patterns[] = '/_([^\*]+)_/'; // Bold/strong text
         $replacements[] = '<em>$1</em>';
 
-        $patterns[] = '/`([^\*]+)`/'; // Code
+        $patterns[] = '/`([^\`]+)`/'; // Code
         $replacements[] = '<code>$1</code>';
 
+        echo "$md\n-----\n".preg_replace($patterns, $replacements, $md)."\n\n-------------------\n\n";
         return preg_replace($patterns, $replacements, $md); 
     }
 
