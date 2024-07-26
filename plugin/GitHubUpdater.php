@@ -709,6 +709,7 @@ class GitHubUpdater
 
     private function getPluginChangeLog(): string 
     {
+        //return '<p>paragraph</p><h1>heading 1</h1><h2>heading 2</h2><h3>heading 3</h3><h4>heading 4</h4><h5>heading 5</h5><h6>heading 6</h6><b>bold</b><strong>strong</strong><i>italics</i><em>emphasis</em><ol><li>order 1</li><li>order 2</li></ol><ul><li>bullet 1</li><li>bullet 2</li><s>strikethrough</s><blockquote>blockquote</blockquote><a href="https://google.com">google.com</a><code>code</code>';
         $this->loadRepositoryVersions();
         
         $changeLog = '<em>Changelog not currently available.</em>';
@@ -725,16 +726,57 @@ class GitHubUpdater
     }
 
     /**
-     * Replaces the markdown syntax with HTML.
+     * Replaces the basic GitHub markdown syntax with HTML.
      * 
-     * This could be replaced with a more robust external library at a later time,
-     * but for now just handles simple HTML.
+     * Not all HTML is supported, so only limited syntax is implemented.
      * 
      * @return string 'Version 1.0.8'
      */
     private function replaceMarkDown($md): string 
     {
-        return $md; // functionality incoming.
+        $patterns = array(); $replacements = array();
+        $md = "$md\r\n"; // Patterns less likely to break w/a blank line at the end
+                
+        $patterns[] = '/^[\*-]\s+(.+)\s/m'; // Unordered List Items
+        $replacements[] = '<li>$1</li>';
+        $patterns[] = '/(<li>.*?<\/li>\s*)+/s'; // Unordered List Grouping
+        $replacements[] = "<ul>$0</ul>\n";
+        $patterns[] = '/^(\d+\.)\s+(.+)\s/m'; // Ordered Lists (not officially supported)
+        $replacements[] = '<olli>$2</olli>';
+        $patterns[] = '/(<olli>.*?<\/olli>\s*)+/s'; // Ordered List Groups
+        $replacements[] = "<ul>$0</ul>\n";
+        $patterns[] = '/olli>/'; // Turning unordered list items into list items
+        $replacements[] = 'li>';
+        $patterns[] = '/\s*(<.(li|ul)>)/'; // List Stragglers
+        $replacements[] = '$1';
+
+        $patterns[] = '/> (.+)/'; // Blockquotes
+        $replacements[] = '<blockquote>$1</blockquote>';
+        $patterns[] = '/\s*<.blockquote>/'; // Blockquote Stragglers
+        $replacements[] = '</blockquote>';
+        $patterns[] = '/<.blockquote>\n<blockquote>/'; // Multi-Line Blockquotes
+        $replacements[] = '<br />';
+        
+        // H1-H6 markdown intentionally not included, but would go here.
+
+        $patterns[] = '/^([^<\r\n]+)/m'; // Paragraphs
+        $replacements[] = '<p>$1</p>';
+
+        $patterns[] = '/(https:\/\/[\/\w\d\-\.\+\?\&\%]+)/'; // Links
+        $replacements[] = '<a href="$1">$1</a>';
+        $patterns[] = '/\[(.+)\]\((<a href=[^>]+>).+<.a>\)/'; // Named Links
+        $replacements[] = '$2$1</a>';
+
+        $patterns[] = '/\*\*([^\*]+)\*\*/'; // Italics/emphasis text
+        $replacements[] = '<strong>$1</strong>';
+
+        $patterns[] = '/_([^\*]+)_/'; // Bold/strong text
+        $replacements[] = '<em>$1</em>';
+
+        $patterns[] = '/`([^\*]+)`/'; // Code
+        $replacements[] = '<code>$1</code>';
+
+        return preg_replace($patterns, $replacements, $md); 
     }
 
     /*------------------------------------------------------------------------*/
