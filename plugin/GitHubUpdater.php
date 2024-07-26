@@ -776,7 +776,7 @@ class GitHubUpdater
         $patterns[] = '/`([^\`]+)`/'; // Code
         $replacements[] = '<code>$1</code>';
 
-        echo "$md\n-----\n".preg_replace($patterns, $replacements, $md)."\n\n-------------------\n\n";
+        //echo "$md\n-----\n".preg_replace($patterns, $replacements, $md)."\n\n-------------------\n\n";
         return preg_replace($patterns, $replacements, $md); 
     }
 
