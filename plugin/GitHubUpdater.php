@@ -445,21 +445,11 @@ class GitHubUpdater
 
         if ($args->slug == current(explode('/', $this->pluginSlug))) {
 
-            // Get remote plugin file contents to read plugin header
-            $fileContents = $this->getRemotePluginFileContents();
-
-            // Extract plugin version from remote plugin file contents
-            preg_match_all(
-                '/\s+\*\s+Version:\s+(\d+(\.\d+){0,2})/',
-                $fileContents,
-                $matches
-            );
-
-            // Save plugin version from remote plugin file, e.g. `1.1.0`
-            $newVersion = $matches[1][0] ?? '';
+            // Save plugin version from remote plugin file or latest version, e.g. `1.1.0`
+            $newVersion = $this->getRemoteVersion();
 
             // If version wasn't found, exit
-            if (!$newVersion) return $update;
+            if (!$newVersion) return false;
 
             // Build plugin response for WordPress
             $plugin = [
@@ -531,18 +521,8 @@ class GitHubUpdater
         // If plugin does not match this plugin, exit
         if ($file !== $this->pluginFile) return $update;
 
-        // Get remote plugin file contents to read plugin header
-        $fileContents = $this->getRemotePluginFileContents();
-
-        // Extract plugin version from remote plugin file contents
-        preg_match_all(
-            '/\s+\*\s+Version:\s+(\d+(\.\d+){0,2})/',
-            $fileContents,
-            $matches
-        );
-
-        // Save plugin version from remote plugin file, e.g. `1.1.0`
-        $newVersion = $matches[1][0] ?? '';
+        // Save plugin version from remote plugin file or latest version, e.g. `1.1.0`
+        $newVersion = $this->getRemoteVersion();
 
         // If version wasn't found, exit
         if (!$newVersion) return $update;
@@ -564,6 +544,40 @@ class GitHubUpdater
         if($this->pluginIcons) { $plugin['icons'] = $this->pluginIcons; }
 
         return $plugin;
+    }
+
+    /**
+     * Get the latest version from GitHub
+     * 
+     * @return string
+     */
+    private function getRemoteVersion(): string 
+    {
+        switch($this->gitHubUpdateMethod) {
+            case 'default':
+            case 'versions':
+                $this->loadRepositoryVersions();
+                // If there are versions defined, return most recent version number
+                if(0<count($this->gitHubVersions)) {
+                    return $this->gitHubVersions[0]->tag_name;
+                } elseif($this->gitHubUpdateMethod=='versions') {
+                    break; // Don't continue to the branch
+                }
+            case 'branch':
+                // Get remote plugin file contents to read plugin header
+                $fileContents = $this->getRemotePluginFileContents();
+
+                // Extract plugin version from remote plugin file contents
+                preg_match_all(
+                    '/\s+\*\s+Version:\s+(\d+(\.\d+){0,2})/',
+                    $fileContents,
+                    $matches
+                );
+
+                // Save plugin version from remote plugin file, e.g. `1.1.0`
+                return $matches[1][0] ?? '';
+        }
+        return '';
     }
 
     /**
@@ -698,6 +712,7 @@ class GitHubUpdater
     private function loadRepositoryVersions(): void
     {
         if(null === $this->gitHubVersions) { return; }
+        if(0 < count($this->gitHubVersions)) { return; }
 
         $headers = [ 'Accept' => 'application/vnd.github+json', ];
         if($this->gitHubAccessToken) { $headers['Authorization'] = 'Bearer ' . $this->gitHubAccessToken; }
