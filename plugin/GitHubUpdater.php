@@ -339,7 +339,7 @@ class GitHubUpdater
         $this->testedWpVersion = $pluginTested;
 
         // e.g. `main` or `master`
-        $this->gitHubBranch = $pluginBranch;
+        if('' != $pluginBranch) { $this->gitHubBranch = $pluginBranch; }
 
         // e.g. `default` or `versions` or `branch`
         if('' != $pluginUpdateMethod) { $this->gitHubUpdateMethod = $pluginUpdateMethod; }
