@@ -268,7 +268,7 @@ class GitHubUpdater
         $pluginName = $pluginData['PluginName'] ?? '';
 
         // Plugin icons can be remote URLs or a relative path (from the location of this file) to a local assets directory.
-        $pluginIcons = false;
+        $pluginIcons = [];
         if($pluginData['Icon1xURI']) { 
             $pluginIcons['1x'] = (substr( $pluginData['Icon1xURI'],0,4) == 'http') ? $pluginData['Icon1xURI'] : plugins_url($pluginData['Icon1xURI'],__FILE__); 
         }
@@ -277,7 +277,7 @@ class GitHubUpdater
         }
 
         // Plugin icons can be remote URLs or a relative path (from the location of this file) to a local assets directory.
-        $pluginBanners = false;
+        $pluginBanners = [];
         if($pluginData['Banner1xURI']) { 
             $pluginBanners['low'] = (substr( $pluginData['Banner1xURI'],0,4 )=='http') ? $pluginData['Banner1xURI'] : plugins_url($pluginData['Banner1xURI'],__FILE__); 
         }
