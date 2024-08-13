@@ -685,11 +685,24 @@ class GitHubUpdater
      */
     private function getPublicRemotePluginZipFile(): string
     {
-        return sprintf(
-            'https://github.com/%s/archive/refs/heads/%s.zip',
-            $this->gitHubPath,
-            $this->gitHubBranch
-        );
+        switch($this->gitHubUpdateMethod) {
+            case 'default':
+            case 'versions':
+                $this->loadRepositoryVersions();
+                // If there are versions defined, return most recent zipball
+                if(0<count($this->gitHubVersions)) {
+                    return $this->gitHubVersions[0]->zipball_url;
+                } elseif($this->gitHubUpdateMethod=='versions') {
+                    break; // Don't continue to the branch
+                }
+            case 'branch':
+                return sprintf(
+                    'https://github.com/%s/archive/refs/heads/%s.zip',
+                    $this->gitHubPath,
+                    $this->gitHubBranch
+                );
+        }
+        return ''; // Error finding zip file
     }
 
     /**
@@ -699,11 +712,24 @@ class GitHubUpdater
      */
     private function getPrivateRemotePluginZipFile(): string
     {
-        return sprintf(
-            'https://api.github.com/repos/%s/zipball/%s',
-            $this->gitHubPath,
-            $this->gitHubBranch
-        );
+        switch($this->gitHubUpdateMethod) {
+            case 'default':
+            case 'versions':
+                //$this->loadRepositoryVersions();
+                // If there are versions defined, return most recent zipball
+                if(0<count($this->gitHubVersions)) {
+                    return $this->gitHubVersions[0]->zipball_url;
+                } elseif($this->gitHubUpdateMethod=='versions') {
+                    break; // Don't continue to the branch
+                }
+            case 'branch':
+                return sprintf(
+                    'https://api.github.com/repos/%s/zipball/%s',
+                    $this->gitHubPath,
+                    $this->gitHubBranch
+                );        
+        }
+        return ''; // Error finding zip file
     }
 
     /**
@@ -845,13 +871,12 @@ class GitHubUpdater
      */
     public function _prepareHttpRequestArgs(array $args, string $url): array
     {
-        // If URL doesn't match ZIP file to private GitHub repo, exit
-        if ($url !== $this->getPrivateRemotePluginZipFile()) return $args;
-
-        // Include GitHub access token and file type
-        $args['headers']['Authorization'] = 'Bearer ' . $this->gitHubAccessToken;
-        $args['headers']['Accept'] = 'application/vnd.github+json';
-
+        $parsed_url = wp_parse_url($url);
+        if(('github.com' === substr(($parsed_url['host']??''),-10))&&$this->gitHubAccessToken) {
+            // Include GitHub access token and file type
+            $args['headers']['Authorization'] = 'Bearer ' . $this->gitHubAccessToken;
+            $args['headers']['Accept'] = 'application/vnd.github+json';
+        }
         return $args;
     }
 
