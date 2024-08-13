@@ -75,6 +75,13 @@ class GitHubUpdater
      */
     private array $gitHubVersions = [];
 
+    /**
+     * GitHub Update Method
+     * 
+     * @var string default
+     */
+    private string $gitHubUpdateMethod = 'default';
+
     /*------------------------------------------------------------------------*/
 
     /**
@@ -240,6 +247,7 @@ class GitHubUpdater
                 'UpdateURI' => 'Update URI',
                 'PluginTested' => 'Tested Up To',
                 'Branch' => 'Branch Name',
+                'UpdateMethod' => 'Update Method',
                 'Author' => 'Author',
                 'AuthorURI' => 'Author URI',
                 'Description' => 'Description',
@@ -259,6 +267,7 @@ class GitHubUpdater
         $version = $pluginData['Version'] ?? '';
         $pluginTested = $pluginData['PluginTested'] ?? '';
         $pluginBranch = $pluginData['Branch'] ?? 'main';
+        $pluginUpdateMethod = $pluginData['UpdateMethod'] ?? 'default'; 
 
         $pluginAuthor = $pluginData['Author'] ?? '';
         $pluginAuthorURI = $pluginData['AuthorURI'] ?? '';
@@ -331,6 +340,9 @@ class GitHubUpdater
 
         // e.g. `main` or `master`
         $this->gitHubBranch = $pluginBranch;
+
+        // e.g. `default` or `versions` or `branch`
+        if('' != $pluginUpdateMethod) { $this->gitHubUpdateMethod = $pluginUpdateMethod; }
 
         // e.g. `Ryan Sechrest`
         $this->pluginAuthor = $pluginAuthor;
@@ -906,6 +918,19 @@ class GitHubUpdater
     public function setBranch(string $branch): self
     {
         $this->gitHubBranch = $branch;
+
+        return $this;
+    }
+
+    /**
+     * Set GitHub Update Method of plugin.
+     *
+     * @param string $updateMethod default
+     * @return $this
+     */
+    public function setUpdateMethod(string $updateMethod): self
+    {
+        $this->gitHubUpdateMethod = $updateMethod;
 
         return $this;
     }

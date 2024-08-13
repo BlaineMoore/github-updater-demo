@@ -40,6 +40,21 @@ Alternatively, you can add the following plugin header field instead:
 * Branch Name:    main
 ```
 
+### Configure: Update Method (Optional)
+
+You can update your plugin using the raw zipball for a specific `branch` or by using a `versions` zipball.
+
+By `default` it will try to use the latest version, and if not the production branch.
+
+```php
+$gitHubUpdater->setUpdateMethod('versions');
+```
+Alternatively, you can add the following plugin header field instead:
+
+```php
+* Update Method:    default
+```
+
 ### Configure: Personal Access Token (Optional)
 
 If your GitHub repository is private, then set your access token:
