@@ -7,7 +7,7 @@ namespace RYSE\GitHubUpdaterDemo;
  * either a public or private repository on GitHub.
  *
  * @package RYSE\GitHubUpdaterDemo
- * @version 1.1.0
+ * @version 1.1.1
  * 
  * @since 1.0.0
  * @author Ryan Sechrest
